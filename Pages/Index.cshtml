@@ -4,7 +4,80 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>@ViewData["Title"]</h1>
+    
+    <form id="notificationForm">
+        <label for="recipient">Recipient:</label><br>
+        <input type="text" id="recipient" name="recipient" required><br><br>
+
+        <label for="message">Message:</label><br>
+        <textarea id="message" name="message" rows="4" required></textarea><br><br>
+
+        <button type="submit">Send Notification</button>
+    </form>
+
+    <div id="result" class="result"></div>
+
+    <script>
+        document.getElementById("notificationForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const recipient = document.getElementById("recipient").value;
+            const message = document.getElementById("message").value;
+
+            const notificationData = {
+                recipient: recipient,
+                message: message
+            };
+
+            fetch('/api/notifications/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(notificationData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultElement = document.getElementById("result");
+                if (data.message) {
+                    resultElement.innerHTML = `<p class="success">${data.message}</p>`;
+                } else if (data.details) {
+                    resultElement.innerHTML = `<p class="error">Error: ${data.details}</p>`;
+                }
+            })
+            .catch(error => {
+                const resultElement = document.getElementById("result");
+                resultElement.innerHTML = `<p class="error">Failed to send notification: ${error.message}</p>`;
+            });
+        });
+    </script>
+
+</body>
+</html>

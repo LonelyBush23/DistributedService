@@ -15,14 +15,47 @@ namespace DistributedService.NotificationGateway.Controllers
             _notificationService = notificationService;
         }
 
-        [HttpPost]
+        //[HttpPost]
+        //public async Task<IActionResult> SendNotification([FromBody] NotificationDto notification)
+        //{
+        //    var result = await _notificationService.SendNotificationAsync(notification);
+        //    if (result.Success)
+        //        return Ok(new { message = "Notification sent successfully!" });
+        //    else
+        //        return BadRequest(new { message = result.Message });
+        //}
+
+        // Endpoint для отправки уведомлений
+        [HttpPost("send")]
         public async Task<IActionResult> SendNotification([FromBody] NotificationDto notification)
         {
+            if (notification == null)
+            {
+                return BadRequest("Invalid notification data");
+            }
+
             var result = await _notificationService.SendNotificationAsync(notification);
+
             if (result.Success)
-                return Ok(new { message = "Notification sent successfully!" });
-            else
-                return BadRequest(new { message = result.Message });
+            {
+                return Ok(new { message = "Notification sent successfully" });
+            }
+
+            return StatusCode(500, new { message = "Failed to send notification", details = result.Message });
+        }
+
+        // Endpoint для получения статуса уведомления (пример)
+        [HttpGet("status/{id}")]
+        public async Task<IActionResult> GetNotificationStatus(int id)
+        {
+            var status = await _notificationService.GetNotificationStatusAsync(id);
+
+            if (status == null)
+            {
+                return NotFound(new { message = "Notification not found" });
+            }
+
+            return Ok(status);
         }
     }
 }

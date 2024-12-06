@@ -19,16 +19,20 @@ namespace DistributedService.NotificationGateway
             Configuration = configuration;
         }
 
-        public void ConfigureServices(IServiceCollection services)
+        public async void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
 
-            // Настройка RabbitMQ
-            services.AddSingleton<IConnection>(sp =>
+
+            var factory = new ConnectionFactory()
             {
-                var factory = new ConnectionFactory() { HostName = "localhost" };
-                return (IConnection)factory.CreateConnectionAsync();
-            });
+                HostName = "localhost:5050",
+                // Добавьте другие параметры конфигурации, если нужно
+            };
+
+            var conn = await factory.CreateConnectionAsync();
+
+            services.AddSingleton<IConnection>(conn);
 
             // Регистрация сервисов
             services.AddScoped<IMessageQueueService, RabbitMqMessageQueueService>();

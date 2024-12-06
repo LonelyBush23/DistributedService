@@ -5,5 +5,6 @@ namespace DistributedService.NotificationGateway.Core.Domain.Interfaces
     public interface INotificationService
     {
         Task<IResult> SendNotificationAsync(NotificationDto notification);
+        Task<string> GetNotificationStatusAsync(int notificationId);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DistributedService.NotificationGateway.Core.Application.DTOs;
 using DistributedService.NotificationGateway.Core.Domain.Interfaces;
+using System.Threading.Tasks;
 
 namespace DistributedService.NotificationGateway.Core.Application.Services
 {
@@ -10,6 +11,13 @@ namespace DistributedService.NotificationGateway.Core.Application.Services
         public NotificationService(IMessageQueueService messageQueueService)
         {
             _messageQueueService = messageQueueService;
+        }
+
+        public async Task<string> GetNotificationStatusAsync(int notificationId)
+        {
+            // Получение статуса уведомления (например, из базы данных)
+            // Здесь возвращаем просто пример
+            return await Task.FromResult("Sent");
         }
 
         public async Task<Domain.Interfaces.IResult> SendNotificationAsync(NotificationDto notification)
